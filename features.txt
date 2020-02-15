@@ -1,0 +1,10 @@
+ - Upload game
+    - Modal appears to select file. Uploading file populates fields
+      and starts game
+ - Set speed
+    - Radio boxes for Slow, Medium, Fast, Extra Fast
+ - Input numbers
+    - Clicking game square brings up number selector for 1-9
+    - Selecting number populates the field
+ - Validate inputs
+    - Check for valid game input
