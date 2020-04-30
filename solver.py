@@ -1,27 +1,41 @@
-# Python sudoku solver that takes in a file representing a valid or invalid Sudoku game
-# and prints to stdout a valid solution to that game if one exists (no UI yet).
-
-N = 9
+import sys
 
 def initialize_board():
-    global board
+    global N, board
+    N = 9
     board = []
-    file_name = 'game.txt'
-    fo = open(file_name, 'r')
-    for _ in range(N-1):
-        board.append(list(map(int, fo.readline()[:-1].split('  ')))) # ordered by row, e.g. if board[0] is the first square,
-                                                                     # board[9] is the first square of the second row
-    board.append(list(map(int, fo.readline().split('  ')))) # no newline on last row
+    fo = open(sys.argv[1], 'r')
+    for _ in range(N):
+        board.append(list(map(int, fo.readline().split('  '))))
     fo.close()
 
+    print('\nStarting board:')
     print_board()
 
-def solve():
-    # for x in range(N):
-    #     for y in range(N):
-    return 0
+def solve(x, y):
+    if x >= N and y >= N-1:
+        print('Solution:')
+        print_board()
+        exit()
 
-# assumes n has not been added to the board at (x,y) yet
+    if x >= N:
+        x = 0
+        y += 1
+
+    if board[y][x] != 0:
+        solve(x+1, y)
+        return False
+
+    for n in range(1, N+1):
+        if is_valid(n, x, y):
+            # print('valid square found:', n, 'at (', x, ',', y, ')')
+            set_square(n, x, y)
+            if not solve(x+1, y):
+                set_square(0, x, y)
+
+    # print('error! no valid options at (', x, ',', y, ')... returning to previous stack')
+    return False
+
 def is_valid(n, x, y):
     row = board[y]
     column = [board[i][x] for i in range(N)]
@@ -38,7 +52,7 @@ def is_valid(n, x, y):
         y_start = 3
     else:
         y_start = 6
-    box = [board[y_start+i][x_start+j] for i in range(0,3) for j in range(0,3)]
+    box = [board[y_start+i][x_start+j] for i in range(3) for j in range(3)]
     return n not in row and n not in column and n not in box
 
 def print_board():
@@ -48,6 +62,13 @@ def print_board():
             print(board[i][j], '   ', end='')
         print('\n')
 
+def set_square(n, x, y):
+    board[y][x] = n
+
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print('\nusage: python solver.py [game_file]\n')
+        exit()
     initialize_board()
-    solve()
+    solve(0,0)
+    print('This game has no valid solution')
